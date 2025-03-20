@@ -52,13 +52,14 @@ The framework uses a modular agent-based approach:
     source .venv/bin/activate
 3. Install required dependencies:
    ```
-   pip install google-generativeai openai-agents
+   uv pip install google-openai-agents
+   uv pip install -q -U google-genai
    ```
 4. Set your Gemini API key in both `gemsearch.py` and `suggest.py`:
    ```python
    GEMINI_API_KEY = "your_api_key_here"
 
-5. Set OPENAI_API_KEY as enviorment variable
+5. OR Set OPENAI_API_KEY as enviorment variable
    ```
     export OPENAI_API_KEY = "your_api_key_here"
 6. Set GEMINI_API_KEY as enviorment variable
