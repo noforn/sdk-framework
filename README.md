@@ -1,4 +1,5 @@
 # WatchDog - Automated Security Testing Framework
+![Logo](watchdog.png)
 
 Developmental concept for a modular, agent-based framework enabling automated security testing through a combination of OpenAI's Agents SDK and Google's Gemini API for intelligent autonomous vulnerability assessment and exploitation. 
 
