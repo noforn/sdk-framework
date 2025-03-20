@@ -1,15 +1,37 @@
 # Security Testing Framework
 
-A modular, agent-based framework for automated security testing that combines OpenAI's Agents SDK with Google's Gemini API for intelligent vulnerability assessment and automated exploitation.
+Developmental concept for a modular, agent-based framework enabling automated security testing through a combination of OpenAI's Agents SDK and Google's Gemini API for intelligent autonomous vulnerability assessment and exploitation. 
+
+## Disclaimer and Ethical Use Notice
+
+This tool is intended **ONLY** for authorized security testing and educational purposes. Always ensure you have explicit permission to test any systems.
+
+**LEGAL DISCLAIMER:** The developers of this framework are not responsible for any misuse, damage, or illegal activities performed with this tool. Users are solely responsible for ensuring all testing activities comply with applicable laws, regulations, and organizational policies.
+
+**INTENDED USE:**
+- Security professionals conducting authorized penetration tests
+- Educational environments teaching cybersecurity concepts
+- Research and development of defensive security measures
+
+**PROHIBITED USE:**
+- Unauthorized testing of systems without explicit permission
+- Any illegal activities or attacks against systems
+- Exploitation of vulnerabilities in production environments without proper authorization
+
+By using this framework, you agree to use it responsibly and ethically. Always obtain proper written authorization before testing any system.
+
+Remember, life is more enjoyable when Europol doesn't know your name.
 
 ## Overview
 
 This framework combines traditional security testing tools with AI-powered analysis to automate the vulnerability discovery and testing process. It features:
 
-- Automated nmap scanning and service detection
-- AI-powered CVE lookup for discovered services
-- Intelligent command suggestion based on scan results
-- Vulnerability testing with appropriate commands
+- Automated scanning and service detection
+- CVE lookup for discovered services
+- Command suggestion from reasoning model based on scan results
+- Autonomous testing of discovered vulnerabilities
+- Run Stream Context
+- Optional RAG implementation
 - Comprehensive reporting and documentation
 
 ## Components
@@ -18,41 +40,42 @@ This framework combines traditional security testing tools with AI-powered analy
 
 - **run-example.py**: Main runner script that orchestrates the entire security testing process
 - **gemsearch.py**: Wrapper for Gemini API to search for CVEs affecting specific software/services
-- **suggest.py**: Generates intelligent security testing command suggestions based on scan results
+- **suggest.py**: 'gemini-2.0-flash-thinking-exp-01-21 'generates security testing command suggestions based on scan results
 
 ### Agent System
 
 The framework uses a modular agent-based approach:
 
-- **WatchDog**: Main orchestration agent that manages the overall testing process
+- **WatchDog**: Main orchestration agent that manages the overall testing process. Uses other agents as tools. Obtains consent first.
 - **Nmap Agent**: Handles service discovery and version identification
-- **Search Agent**: Looks up vulnerabilities for discovered services using Gemini
-- **Command Suggestion Agent**: Recommends appropriate testing commands for vulnerabilities
-- **Execution Agent**: Safely executes recommended commands to test for vulnerabilities
-- **File System Agent**: Manages the output report generation
+- **Search Agent**: Looks up vulnerabilities for discovered services using Gemini (more cost-efficient compared to OpenAI's WebSearchTool)
+- **Command Suggestion Agent**: Reasons and suggets appropriate testing commands based on discovered vulnerabilities
+- **Execution Agent**: Executes recommended commands to test for vulnerabilities
+- **Testing Agent**: Uses tools to search for and create POC (proof of concept) examples for discovered vulnerabilities
+- **File System Agent**: Manages the output report generation and some file system operations
 
 ## Requirements
 
-- Python 3.7+
+- Python / UV
 - openai-agents
-- Google Gemini API key
+- OpenAI/Gemini API keys
 - Required Python packages:
   - google-generativeai
+  - openai-agents
   - asyncio
-  - dataclasses
-  - subprocess
 
 ## Setup
 
-1. Clone the repository
-
+1. Install UV
+    ```
+    curl -LsSf https://astral.sh/uv/install.sh | sh
 2. Set up enviorment
     ```
     uv venv --python 3.11
     source .venv/bin/activate
 3. Install required dependencies:
    ```
-   uv pip install google-openai-agents
+   uv pip install openai-agents
    uv pip install -q -U google-genai
    ```
 4. Set your Gemini API key in both `gemsearch.py` and `suggest.py`:
@@ -74,10 +97,11 @@ python run-example.py
 ```
 
 The framework will:
-1. Scan the target IP (192.168.166.115 by default)
+1. Scan the target IP (192.168.1.1 by default)
 2. Identify running services and their versions
 3. Search for relevant CVEs affecting those services
-4. Generate appropriate testing commands
+4. Search for and create relevant POCs
+4. Generate and execute applicable commands
 5. Test for vulnerabilities
 6. Create comprehensive reports in the `/pwn` directory
 
@@ -87,7 +111,8 @@ After execution, results will be stored in:
 - `/pwn/scan_results.txt`: Full scan results
 - `/pwn/commands_ran.txt`: List of executed commands
 - `/pwn/command_outputs.txt`: Command outputs and findings
+This can easily be customized in 'run-example.py'.
 
 ## Security Notice
 
-This tool is intended for authorized security testing only. Always ensure you have proper permission to test any systems. The framework includes safety measures like:
+This concept is intended for authorized security testing only. Always ensure you have proper permission to test any systems. The framework includes limited safety measures. Deploy at your own risk within isolated enviorments.
