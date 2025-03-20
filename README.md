@@ -41,19 +41,19 @@ This framework combines traditional security testing tools with AI-powered analy
 
 - **run-example.py**: Main runner script that orchestrates the entire security testing process
 - **gemsearch.py**: Wrapper for Gemini API to search for CVEs affecting specific software/services
-- **suggest.py**: 'gemini-2.0-flash-thinking-exp-01-21 'generates security testing command suggestions based on scan results
+- **suggest.py**: 'gemini-2.0-flash-thinking-exp-01-21' generates security testing command suggestions based on scan results and discovered vulnerabilities
 
 ### Agent System
 
 The framework uses a modular agent-based approach:
 
 - **WatchDog**: Main orchestration agent that manages the overall testing process. Uses other agents as tools. Obtains consent first.
-- **Nmap Agent**: Handles service discovery and version identification
-- **Search Agent**: Looks up vulnerabilities for discovered services using Gemini (more cost-efficient compared to OpenAI's WebSearchTool)
+- **Nmap Agent**: Runs nmap for discovery and version identification
+- **Search Agent**: Searches for public vulnerabilities related to discovered service versions using Gemini (more cost-efficient compared to OpenAI's WebSearchTool)
 - **Command Suggestion Agent**: Reasons and suggets appropriate testing commands based on discovered vulnerabilities
-- **Execution Agent**: Executes recommended commands to test for vulnerabilities
-- **Testing Agent**: Uses tools to search for and create POC (proof of concept) examples for discovered vulnerabilities
-- **File System Agent**: Manages the output report generation and some file system operations
+- **Testing Agent**: Uses tools to search for and create POC (proof of concept) examples for discovered vulnerabilities. Creates working exploit scripts.
+- **Execution Agent**: Executes recommended commands and generated exploit scripts to test exploitation of discovered vulnerabilities
+- **File System Agent**: Manages the output report generation and some other file system operations
 
 ## Requirements
 
