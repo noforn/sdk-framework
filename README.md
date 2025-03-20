@@ -45,18 +45,23 @@ The framework uses a modular agent-based approach:
 ## Setup
 
 1. Clone the repository
-2. Install required dependencies:
+
+2. Set up enviorment
+    ```
+    uv venv --python 3.11
+    source .venv/bin/activate
+3. Install required dependencies:
    ```
-   pip install google-generativeai
+   pip install google-generativeai openai-agents
    ```
-3. Set your Gemini API key in both `gemsearch.py` and `suggest.py`:
+4. Set your Gemini API key in both `gemsearch.py` and `suggest.py`:
    ```python
    GEMINI_API_KEY = "your_api_key_here"
 
-4. Set OPENAI_API_KEY as enviorment variable
+5. Set OPENAI_API_KEY as enviorment variable
    ```
     export OPENAI_API_KEY = "your_api_key_here"
-5. Set GEMINI_API_KEY as enviorment variable
+6. Set GEMINI_API_KEY as enviorment variable
    ```
     export GEMINI_API_KEY = "your_api_key_here"
 ## Usage
