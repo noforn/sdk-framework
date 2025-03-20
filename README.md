@@ -51,7 +51,7 @@ The framework uses a modular agent-based approach:
 - **Nmap Agent**: Runs nmap for discovery and version identification
 - **Search Agent**: Searches for public vulnerabilities related to discovered service versions using Gemini (more cost-efficient compared to OpenAI's WebSearchTool)
 - **Command Suggestion Agent**: Reasons and suggets appropriate testing commands based on discovered vulnerabilities
-- **Testing Agent**: Uses tools to search for and create POC (proof of concept) examples for discovered vulnerabilities. Creates working exploit scripts.
+- **Testing Agent**: Uses tools to search for and create POC (proof of concept) examples for discovered vulnerabilities. Aims to create working exploit scripts.
 - **Execution Agent**: Executes recommended commands and generated exploit scripts to test exploitation of discovered vulnerabilities
 - **File System Agent**: Manages the output report generation and some other file system operations
 
