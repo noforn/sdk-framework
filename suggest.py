@@ -29,7 +29,7 @@ try:
         
         prompt = f"""
         You are an advanced offensive security testing assistant. Based on the following information, 
-        suggest 3-5 specific, targeted commands to test for the discovered vulnerabilities.
+        suggest 3-5 specific, targeted commands to test for the discovered vulnerabilities.  
 
         TARGET IP: {target_ip}
 
@@ -48,6 +48,7 @@ try:
         3. Include safe timeouts to prevent hanging operations
         4. Would genuinely test for the presence of these vulnerabilities
         5. Are non-destructive and focused on vulnerability confirmation
+        6. Focus on gaining initial access to the target system
         
         Format your response as:
         ```
@@ -64,7 +65,7 @@ try:
         """
         
         response = client.models.generate_content(
-            model="gemini-2.0-pro-exp-02-05",  # pro model for now, thinking later
+            model="gemini-2.0-flash-thinking-exp-01-21",
             contents=prompt,
             config=GenerateContentConfig(
                 tools=[{"google_search": GoogleSearch()}],

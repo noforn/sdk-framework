@@ -16,8 +16,10 @@ try:
         Format output as a numbered list with:
         1. CVE ID
         2. Severity rating (Critical/High/Medium/Low)
-        3. Brief description of the vulnerability
-        
+        3. Brief description of the how to exploit the vulnerability
+        4. Only return the 5 most version specific and most critical findings.
+        5. Always verify that the exact service version is affected.
+        6. Always prioritize initial access
         Only include verified CVEs with clear severity ratings.
         """
         

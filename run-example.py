@@ -17,6 +17,7 @@ class SecurityTestContext:
     nmap_results: Optional[str] = None
     web_search_results: Optional[str] = None
     last_tool_name: Optional[str] = None
+    target_ip: str = "192.168.150.35"
 
 # Gemini Tools
 
@@ -38,17 +39,12 @@ def gemini_search(query: str) -> str:
     
 @function_tool
 def suggest_commands(scan_results: str, vulnerabilities: str, target_ip: str) -> str:
-    """
-    Use Gemini to suggest better security testing commands based on scan results and vulnerabilities.
-    
-    Args:
-        scan_results: Results from nmap scan
-        vulnerabilities: Information about discovered vulnerabilities
-        target_ip: IP address of the target
-        
-    Returns:
-        Suggested commands for better security testing
-    """
+    if not scan_results or not vulnerabilities or not target_ip:
+        missing = []
+        if not scan_results: missing.append("scan_results")
+        if not vulnerabilities: missing.append("vulnerabilities")
+        if not target_ip: missing.append("target_ip")
+        return f"Error: Missing required parameters: {', '.join(missing)}. All three parameters must be provided."
     import subprocess
     import json
     
@@ -77,6 +73,25 @@ def suggest_commands(scan_results: str, vulnerabilities: str, target_ip: str) ->
         return f"Error getting command suggestions: {e.stderr}"
     except Exception as e:
         return f"Error: {str(e)}"
+    
+@function_tool
+def search_exploit_poc(cve_id: str, service_version: str) -> str:
+    """Search for proof-of-concept exploit code for a specific CVE"""
+    try:
+        query = f"{cve_id} exploit-db {service_version} proof-of-concept"
+        result = subprocess.run(
+            [sys.executable, "gemsearch.py", query],
+            capture_output=True,
+            text=True,
+            check=True
+        )
+        search_results = result.stdout.strip()
+        return f"""
+        Search results for {cve_id}:
+        {search_results}
+        """
+    except Exception as e:
+        return f"Error searching for exploit POC: {str(e)}"
 
 # Standard tools
 
@@ -137,6 +152,28 @@ def write_file(filepath: str, content: str) -> str:
     except Exception as e:
         return f"Error writing to file: {str(e)}"
     
+@function_tool
+def create_exploit_file(filename: str, content: str) -> str:
+    """Create a file with exploit code"""
+    try:
+        # Ensure the /pwn/exploits directory exists
+        os.makedirs("~/pwn/exploits", exist_ok=True)
+        
+        # Create the full path
+        filepath = os.path.join("/pwn/exploits", filename)
+        
+        # Write the content to the file
+        with open(filepath, 'w') as f:
+            f.write(content)
+        
+        # Set executable permissions if it looks like a script
+        if filename.endswith(('.py', '.sh', '.pl', '.rb')):
+            os.chmod(filepath, 0o755)
+        
+        return f"Successfully created exploit file {filepath}"
+    except Exception as e:
+        return f"Error creating exploit file: {str(e)}"
+    
 # Specialized Agents
 
 file_system_agent = Agent(
@@ -159,7 +196,7 @@ search_agent = Agent(
 
 nmap_agent = Agent(
     name="Nmap Agent",
-    instructions="Scan the IP address using run_nmap tool. Extract and format results in a structured format showing each service, port, and complete version information. Return only this formatted output.",
+    instructions="Scan the IP address using run_nmap tool. Extract and format results in a structured format showing each service, port, and complete version information. Return this information in a simple, nice looking output.",
     tools=[run_nmap]
 )
 
@@ -170,14 +207,28 @@ exec_agent = Agent(
         "Select commands that target specific vulnerabilities from previous findings. "
         "Use bash one-liners when possible for simulating exploits. "
         "Avoid interactive tools. Return only the command output."
+        "Always include the target IP, never use example targets or other IPs"
     ),
     tools=[execute_command]
 )
 
 suggest_agent = Agent(
     name="Command Suggestion Agent",
-    instructions="Suggest improved security testing commands based on scan results and discovered vulnerabilities. Always provide the target_ip parameter when calling this tool.",
+    instructions="Suggest improved security testing commands based on scan results and discovered vulnerabilities. Always provide the target_ip, scan_results, and vulnerabilities parameters when calling this tool.",
     tools=[suggest_commands],
+)
+
+testing_agent = Agent(
+    name="Exploit Agent",
+    instructions=(
+        "You are an agent specialized in finding and deploying exploit code. "
+        "Follow these steps when asked to exploit a vulnerability:\n"
+        "1. Use search_exploit_poc to search for POC code for the specified CVE\n"
+        "2. Create an exploit file in /pwn/exploits/ with the code\n"
+        "3. Verify the exploit is tailored to work against the target\n"
+        "Always verify exploits before execution."
+    ),
+    tools=[search_exploit_poc, create_exploit_file, read_file, write_file],
 )
 
 ## WatchDog Agent with AgentasTools
@@ -187,15 +238,22 @@ WatchDog = Agent(
     instructions=(
             "You are an offensive security testing agent. Complete these tasks in order, using exactly 10 or fewer turns:"
             "1. Use nmap_tool to scan the target IP and identify services/versions"
-            "2. Use web_search_tool to find CVEs for the EXACT service versions found" 
-            "3. Use suggestion_tool to get better commands for testing vulnerabilities"  # New step!
+            "2. If not done previously, use web_search_tool to find CVEs for the EXACT service versions found" 
+            "3. Use suggestion_tool to get better commands for testing vulnerabilities by providing ALL THREE parameters:"
+            "   - scan_results: The COMPLETE output from the nmap scan"
+            "   - vulnerabilities: The COMPLETE list of CVEs from the search results"
+            "   - target_ip: The IP address being tested"   
             "4. Select the highest severity vulnerability and investigate if the system is vulnerable"
-            "5. Document everything with these EXACT commands:"
+            "5. For the highest severity vulnerability, use testing_tool to:"
+            "   a. Find a POC exploit for the vulnerability"
+            "   b. Create an exploit file from the code"
+            "   c. Execute the exploit against the target"
+            "6. Document everything with these EXACT commands:"
             "   - exec_tool({\"input\": \"mkdir -p /pwn\"})"
             "   - exec_tool({\"input\": \"echo 'SCAN RESULTS:\\n[paste full scan]' > /pwn/scan_results.txt\"})"
             "   - exec_tool({\"input\": \"echo 'COMMANDS:\\n[list commands run]' > /pwn/commands_ran.txt\"})"
             "   - exec_tool({\"input\": \"echo 'OUTPUTS:\\n[paste outputs]' > /pwn/command_outputs.txt\"})"
-            "IMPORTANT: Never ask for clarification. Never use example commands. Only run commands that are valid on kali linux systems."
+            "IMPORTANT: Never ask for clarification. Never use example commands. Only run commands that are valid on kali linux systems. If a previous command failed, simply it and try again until it works."
             "Do all file operations with exec_tool. When testing for vulnerabilities, use real commands that would actually check if a vulnerability exists - don't just pretend to test by printing messages."
             "Safety guidelines:"
             "- Always add timeouts to commands that might hang (e.g., curl --max-time 10)"
@@ -207,7 +265,7 @@ WatchDog = Agent(
     tools=[
         whoami_agent.as_tool(
             tool_name="whoami_tool",
-            tool_description="Run 'whoami' on the system.",
+            tool_description="Run 'whoami' on the local system.",
         ),
         search_agent.as_tool(
             tool_name="gemini_search_tool",
@@ -219,12 +277,16 @@ WatchDog = Agent(
         ),
         exec_agent.as_tool(
             tool_name="exec_tool",
-            tool_description="Execute commands to test discovered vulnerabilities or manage files.",
+            tool_description="Execute commands to assist the user or manage files.",
         ),
         suggest_agent.as_tool(
             tool_name="suggestion_tool",
             tool_description="Get suggested commands for testing discovered vulnerabilities.",
         ),
+        testing_agent.as_tool(
+            tool_name="testing_tool",
+            tool_description="Find and deploy exploit code."
+        )
     ],
     model_settings=ModelSettings(tool_choice="auto"),
 )
@@ -242,7 +304,7 @@ async def main():
     
     while retry_count < max_retries:
         try:
-            input_text = "run a scan on 192.168.166.115. search for exploits on these services. finally, use exec_tool to test for one of the discovered vulnerabilities"
+            input_text = "run a scan on 192.168.150.35. search for exploits on these services. finally, use exec_tool to test for one of the discovered vulnerabilities"
             
             if retry_count > 0:
                 if "nmap_scan" in context.completed_steps and "web_search" in context.completed_steps:
