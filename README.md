@@ -40,7 +40,7 @@ This framework combines traditional security testing tools with AI-powered analy
 ### Core Scripts
 
 - **run-example.py**: Main runner script that orchestrates the entire security testing process
-- **gemsearch.py**: Wrapper for Gemini API to search for CVEs affecting specific software/services
+- **gemsearch.py**: Wrapper for Gemini API to search for CVEs affecting specific services/versions
 - **suggest.py**: 'gemini-2.0-flash-thinking-exp-01-21' generates security testing command suggestions based on scan results and discovered vulnerabilities
 
 ### Agent System
