@@ -117,4 +117,6 @@ This can easily be customized in 'run-example.py'.
 
 ## Security Notice
 
-This framework is intended for authorized security testing only. Always ensure you have proper permission to test any systems. The framework includes limited safety measures. Deploy at your own risk within isolated enviorments.
+This framework is intended for authorized security testing only. Always ensure you have proper permission to test any systems. 
+
+This framework includes limited safety measures. Deploy at your own risk within isolated enviorments.
