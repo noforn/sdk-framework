@@ -112,6 +112,7 @@ After execution, results will be stored in:
 - `/pwn/scan_results.txt`: Full scan results
 - `/pwn/commands_ran.txt`: List of executed commands
 - `/pwn/command_outputs.txt`: Command outputs and findings
+
 This can easily be customized in 'run-example.py'.
 
 ## Security Notice
