@@ -56,11 +56,9 @@ The framework uses a modular agent-based approach:
 4. Set OPENAI_API_KEY as enviorment variable
    ```
     export OPENAI_API_KEY = "your_api_key_here"
-
 5. Set GEMINI_API_KEY as enviorment variable
    ```
     export GEMINI_API_KEY = "your_api_key_here"
-
 ## Usage
 
 Run the main script with:
