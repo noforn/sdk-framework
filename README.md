@@ -6,15 +6,16 @@ Developmental concept for a modular, agent-based framework enabling automated se
 
 This tool is intended **ONLY** for authorized security testing and educational purposes. Always ensure you have explicit permission to test any systems.
 
-**LEGAL DISCLAIMER:** The developers of this framework are not responsible for any misuse, damage, or illegal activities performed with this tool. Users are solely responsible for ensuring all testing activities comply with applicable laws, regulations, and organizational policies.
+**LEGAL DISCLAIMER:** The developers of this framework are not responsible for any misuse, damage, or illegal activities performed with this developmental concept. Users are solely responsible for ensuring all related activities comply with all applicable laws, regulations, and organizational policies.
 
 **INTENDED USE:**
 - Security professionals conducting authorized penetration tests
 - Educational environments teaching cybersecurity concepts
 - Research and development of defensive security measures
+- Organizations seeking to test and harden their security posture
 
 **PROHIBITED USE:**
-- Unauthorized testing of systems without explicit permission
+- Unauthorized testing of any system without explicit written permission
 - Any illegal activities or attacks against systems
 - Exploitation of vulnerabilities in production environments without proper authorization
 
