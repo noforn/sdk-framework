@@ -17,7 +17,7 @@ class SecurityTestContext:
     nmap_results: Optional[str] = None
     web_search_results: Optional[str] = None
     last_tool_name: Optional[str] = None
-    target_ip: str = "192.168.150.35"
+    target_ip: str = "192.168.1.1"
 
 # Gemini Tools
 
